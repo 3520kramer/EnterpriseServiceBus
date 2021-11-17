@@ -1,4 +1,7 @@
-# Currently supported transformations
+# A naive implementation of an ESB / Kafka
+Implementation is done as part of a school project
+
+## Currently supported transformations
 Object and array definitions for each type can be found below.
 
 | from / to   | JSON | XML | CSV | TSV |
