@@ -2,7 +2,7 @@
 venv*/
 .vscode
 old/
-db_config.py
+db_config.ini
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

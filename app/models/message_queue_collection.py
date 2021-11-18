@@ -1,3 +1,5 @@
+from database.db import Database
+from utilities import helpers
 from models.message_queue import MessageQueue
 from models.subscriber import Subscriber
 import socketio
@@ -8,6 +10,7 @@ class MessageQueueCollection:
     def __init__(self, socket) -> None:
         self.queues: dict[str, MessageQueue] = dict()
         self.socket: socketio.AsyncServer = socket
+        self.db_connection: Database = Database()
 
     def __str__(self):
         return str(self.queues)
@@ -15,7 +18,9 @@ class MessageQueueCollection:
     def __repr__(self):
         return str(self.queues)
 
-    def create_and_populate_queues(self, messages):
+    def create_and_populate_queues(self):
+        messages = self.db_connection.get_all()
+        
         for message in messages:
             topic = message['topic']
 
@@ -27,7 +32,10 @@ class MessageQueueCollection:
         do_queue_exist = self.queues.get(topic)
 
         if(not do_queue_exist):
-            self.queues[topic] = MessageQueue(socket=self.socket)
+            self.queues[topic] = MessageQueue(
+                socket=self.socket, 
+                db_connection=self.db_connection
+                )
 
     def add_subscriber(self, subscriber: Subscriber):
         self.create_queue_if_not_exists(subscriber.topic)
@@ -44,6 +52,10 @@ class MessageQueueCollection:
     async def add_message(self, msg):
         topic = msg['topic']
         await self.queues[topic].add_message(msg)
+        
+        # Creates the log message and inserts it in the database
+        log_msg = helpers.create_log_message(msg)
+        self.db_connection.insert(log_msg)
 
     async def publish_topic(self, topic):
         queue = self.queues.get(topic)

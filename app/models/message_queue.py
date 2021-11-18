@@ -1,7 +1,7 @@
 from asyncio import Queue
+from database.db import Database
 from models.subscriber import Subscriber
-from utilities import transformer
-from database import queries
+from utilities import transformer, helpers
 import socketio
 
 from utilities.transformer import transform
@@ -10,10 +10,11 @@ from utilities.transformer import transform
 
 
 class MessageQueue:
-    def __init__(self, socket) -> None:
+    def __init__(self, socket, db_connection: Database) -> None:
         self.subscribers: list[Subscriber] = []
         self.queue = Queue()
         self.socket: socketio.AsyncServer = socket
+        self.db_connection: Database = db_connection
 
     def __str__(self):
         return str(self.subscribers)
@@ -37,6 +38,11 @@ class MessageQueue:
     async def add_message(self, msg):
         await self.queue.put(msg)
 
+        # Creates the log message and inserts it in the database
+        log_msg = helpers.create_log_message(msg)
+        self.db_connection.insert(log_msg)
+        # queries.insert(log_msg)
+
     async def push_messages(self):
         while not self.queue.empty():
             try:
@@ -45,9 +51,11 @@ class MessageQueue:
 
                 transformed_msg = transformer.transform(msg, output_format)
                 await self.socket.emit('msg_to_subscriber', transformed_msg['content'], room=self.subscribers[0].sid)
-                
+
                 self.queue.task_done()
-                queries.update(msg['uuid'])
+                self.db_connection.update(msg['uuid'])
+
+                # queries.update(msg['uuid'])
 
             except Exception as e:
                 print("Subscribe ERROR:", e)

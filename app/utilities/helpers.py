@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-
+import configparser
 
 def create_log_message(msg):
     return {
@@ -27,3 +27,8 @@ def get_connect_headers(sid, environ):
         'output_format': environ['HTTP_OUTPUT_FORMAT'],
         'sid': sid
     }
+
+def get_db_config():
+    config = configparser.ConfigParser()
+    config.read('app/database/db_config.ini')
+    return config['database']
