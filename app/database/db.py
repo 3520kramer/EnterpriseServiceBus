@@ -7,18 +7,15 @@ class Database():
     def __init__(self):
         self.db_config = helpers.get_db_config()
 
-    def insert(self, msg):
+    def insert(self, msg) -> list:
       query = '''
-        INSERT INTO queue_log (uuid, is_consumed, topic, published_time, content_format, content)
-        VALUES(%s, %s, %s, %s, %s, %s)
+        INSERT INTO queue_log (uuid, is_consumed, topic, published_time, content_format, content, consumed_time)
+        VALUES(%s, %s, %s, %s, %s, %s, %s)
       '''
-
-      msg['content'] = json.dumps(msg['content'])
 
       query_params = list(msg.values())
       print("query_params", query_params)
       self.__query_db(query, query_params)
-
 
     def update(self, uuid):  # uuid
         query = '''
@@ -32,10 +29,12 @@ class Database():
                         uuid]
 
         self.__query_db(query, query_params)
+        print('q', query_params[1])
+        return query_params[1]
 
 
     def get_all(self):
-        query = "SELECT uuid, topic, content_format, content FROM queue_log WHERE is_consumed = 0"
+        query = "SELECT * FROM queue_log WHERE is_consumed = 0"
 
         result = self.__query_db(query, None, is_select_query=True)
 

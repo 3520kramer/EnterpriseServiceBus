@@ -1,26 +1,42 @@
 from asyncio import Queue
 from database.db import Database
+from models.message import Message
 from models.subscriber import Subscriber
-from utilities import transformer, helpers
 import socketio
 
-from utilities.transformer import transform
+from utilities.transformer import transform_to
 
 # https://www.geeksforgeeks.org/python-list-comprehensions-vs-generator-expressions/
 
 
 class MessageQueue:
     def __init__(self, socket, db_connection: Database) -> None:
-        self.subscribers: list[Subscriber] = []
-        self.queue = Queue()
-        self.socket: socketio.AsyncServer = socket
-        self.db_connection: Database = db_connection
+        self.__subscribers: list[Subscriber] = []
+        self.__queue = Queue()
+        self.__socket: socketio.AsyncServer = socket
+        self.__db_connection: Database = db_connection
 
     def __str__(self):
-        return str(self.subscribers)
+        return str(self.__queue)
 
     def __repr__(self):
-        return str(self.subscribers)
+        return str(self.__queue)
+
+    @property
+    def subscribers(self):
+        return self.__subscribers
+
+    @property
+    def queue(self):
+        return self.__queue
+
+    @property
+    def socket(self):
+        return self.__socket
+
+    @property
+    def db_connection(self):
+        return self.__db_connection
 
     def find_subscriber_by_sid(self, sid: str):
         find_sub_generator = (
@@ -35,27 +51,40 @@ class MessageQueue:
         if subscriber is not None:
             self.subscribers.remove(subscriber)
 
-    async def add_message(self, msg):
+    async def add_message(self, msg: Message):
         await self.queue.put(msg)
+        print("msg", msg)
 
         # Creates the log message and inserts it in the database
-        log_msg = helpers.create_log_message(msg)
+        log_msg = msg.get_log_message()
         self.db_connection.insert(log_msg)
-        # queries.insert(log_msg)
+
+        # push new message to frontend
+        await self.socket.emit('msg-published', data=log_msg)
 
     async def push_messages(self):
+        if len(self.subscribers) == 0:
+            print('No subscribers online')
+            return
+
         while not self.queue.empty():
             try:
-                msg = await self.queue.get()
+                msg: Message = await self.queue.get()
+
+                # TODO: Send to one of multiple subscribers
                 output_format = self.subscribers[0].output_format
 
-                transformed_msg = transformer.transform(msg, output_format)
-                await self.socket.emit('msg_to_subscriber', transformed_msg['content'], room=self.subscribers[0].sid)
+                msg.content = transform_to(msg.content, output_format)
+                await self.socket.emit('msg_to_subscriber', msg.get_publish_message(), room=self.subscribers[0].sid)
 
                 self.queue.task_done()
-                self.db_connection.update(msg['uuid'])
 
-                # queries.update(msg['uuid'])
+                msg.consumed_time = self.db_connection.update(msg.uuid)
+                msg.is_consumed = True
+
+                # push new message to frontend
+                await self.socket.emit('msg-consumed', data=msg.get_log_message())
 
             except Exception as e:
+                msg = None
                 print("Subscribe ERROR:", e)

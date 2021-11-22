@@ -12,12 +12,15 @@ def create_log_message(msg):
         'content': msg['content']
     }
 
+def current_datetime():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-def create_publish_message(msg):
+def create_publish_message(data):
     return {
         'uuid':  uuid.uuid4().hex,
-        'topic': msg['topic'],
-        'content': msg['content']
+        'topic': data['topic'],
+        'content_format': data['content_format'],
+        'content': data['content']
     }
 
 

@@ -1,5 +1,5 @@
 # custom
-venv*/
+esb-env/
 .vscode
 old/
 db_config.ini

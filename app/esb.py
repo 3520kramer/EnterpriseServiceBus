@@ -1,13 +1,16 @@
 from aiohttp import web
 import socketio
+from models.message import Message
 from models.subscriber import Subscriber
 from models.message_queue_collection import MessageQueueCollection
-from utilities import helpers
+from utilities.helpers import current_datetime
+from api.dashboard_api import create_dashboard_api
 
 # https://medium.com/@joel.barmettler/how-to-upload-your-python-package-to-pypi-65edc5fe9c56
 
-sio = socketio.AsyncServer()
+sio = socketio.AsyncServer(cors_allowed_origins='http://localhost:3000')
 app = web.Application()
+
 sio.attach(app)
 
 message_queues = MessageQueueCollection(socket=sio)
@@ -43,22 +46,30 @@ async def handle_subscription(sid, data):
 async def handle_published_msg(sid, data):
     print('message ', data)
 
-    # Map incoming data to a publish message
-    publish_msg = helpers.create_publish_message(data)
+    # Reject if input is of bytes type
+    if isinstance(data['content'], bytes):
+        return
 
-    # Create the queue for the topic if it doesn't exist
-    message_queues.create_queue_if_not_exists(publish_msg['topic'])
+    # Create the message
+    msg = Message(
+        topic=data['topic'],
+        content_format=data['content_format'],
+        content=data['content'],
+        published_time=current_datetime())
 
     # Place the message in the queue for the topic
-    await message_queues.add_message(publish_msg)
+    await message_queues.add_message(msg)
 
     # after the log entry has been created the topic will be published
-    await message_queues.publish_topic(publish_msg['topic'])
+    await message_queues.publish_topic(msg.topic)
 
 
 def start(port: int):
+    create_dashboard_api(app, message_queues.db_connection)
+
     message_queues.create_and_populate_queues()
-    print("Initiated queues: ", message_queues)
+    print("Initiated queues: ", message_queues.queues)
+
     web.run_app(app, port=port)
 
 
