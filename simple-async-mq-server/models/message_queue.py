@@ -62,6 +62,15 @@ class MessageQueue:
         # push new message to frontend
         await self.socket.emit('msg-published', data=log_msg)
 
+    # TODO: Implement a way to determine which subscriber to send to (load balancing)
+    def determine_subscriber(self):
+        no_of_subscribers = len(self.subscribers)
+
+        if self.__sent_msgs_count < no_of_subscribers:
+            self.__sent_msgs_count += 1
+            return self.__sent_msgs_count
+
+
     async def push_messages(self):
         if len(self.subscribers) == 0:
             print('No subscribers online')
@@ -75,7 +84,7 @@ class MessageQueue:
                 output_format = self.subscribers[0].output_format
 
                 msg.content = transform_to(msg.content, output_format)
-                await self.socket.emit('msg_to_subscriber', msg.get_publish_message(), room=self.subscribers[0].sid)
+                await self.socket.emit(event=msg.topic, data=msg.get_publish_message(), to=self.subscribers[0].sid)
 
                 self.queue.task_done()
 
