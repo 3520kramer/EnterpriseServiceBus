@@ -33,5 +33,5 @@ def get_connect_headers(sid, environ):
 
 def get_db_config():
     config = configparser.ConfigParser()
-    config.read('app/database/db_config.ini')
+    config.read('simple-async-mq-server/database/db_config.ini')
     return config['database']
