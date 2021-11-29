@@ -2,6 +2,7 @@ from asyncio import Queue
 from database.db import Database
 from models.message import Message
 from models.subscriber import Subscriber
+from utilities.config import reporting_to_dashboard
 import socketio
 
 from utilities.transformer import transform_to
@@ -15,6 +16,7 @@ class MessageQueue:
         self.__queue = Queue()
         self.__socket: socketio.AsyncServer = socket
         self.__db_connection: Database = db_connection
+        self.__is_reporting_to_dashboard: bool = reporting_to_dashboard()
 
     def __str__(self):
         return str(self.__queue)
@@ -38,6 +40,14 @@ class MessageQueue:
     def db_connection(self):
         return self.__db_connection
 
+    @property
+    def is_reporting_to_dashboard(self):
+        return self.__is_reporting_to_dashboard
+
+    @is_reporting_to_dashboard.setter
+    def is_reporting_to_dashboard(self, is_reporting_to_dashboard):
+        self.__is_reporting_to_dashboard = is_reporting_to_dashboard
+
     def find_subscriber_by_sid(self, sid: str):
         find_sub_generator = (
             sub for sub in self.subscribers if sub.sid == sid)
@@ -60,7 +70,8 @@ class MessageQueue:
         self.db_connection.insert(log_msg)
 
         # push new message to frontend
-        await self.socket.emit('msg-published', data=log_msg)
+        if self.is_reporting_to_dashboard:
+            await self.socket.emit('msg-published', data=log_msg)
 
     # TODO: Implement a way to determine which subscriber to send to (load balancing)
     def determine_subscriber(self):
@@ -69,7 +80,6 @@ class MessageQueue:
         if self.__sent_msgs_count < no_of_subscribers:
             self.__sent_msgs_count += 1
             return self.__sent_msgs_count
-
 
     async def push_messages(self):
         if len(self.subscribers) == 0:
@@ -92,7 +102,8 @@ class MessageQueue:
                 msg.is_consumed = True
 
                 # push new message to frontend
-                await self.socket.emit('msg-consumed', data=msg.get_log_message())
+                if self.is_reporting_to_dashboard:
+                    await self.socket.emit('msg-consumed', data=msg.get_log_message())
 
             except Exception as e:
                 msg = None

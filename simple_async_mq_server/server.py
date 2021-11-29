@@ -3,7 +3,9 @@ import socketio
 from models.message import Message
 from models.subscriber import Subscriber
 from models.message_queue_collection import MessageQueueCollection
+from database.db import Database
 from utilities.helpers import current_datetime
+from utilities import config
 from api.dashboard_api import create_dashboard_api
 
 # https://medium.com/@joel.barmettler/how-to-upload-your-python-package-to-pypi-65edc5fe9c56
@@ -13,7 +15,7 @@ app = web.Application()
 
 sio.attach(app)
 
-message_queues = MessageQueueCollection(socket=sio)
+message_queues: MessageQueueCollection = None
 
 
 @sio.event
@@ -63,15 +65,26 @@ async def handle_published_msg(sid, data):
     # after the log entry has been created the topic will be published
     await message_queues.publish_topic(msg.topic)
 
+test = {
+    'host': 'localhost',
+    'user': 'root',
+    'password': '1234',
+    'database': 'siasmq'
+}
 
-def start(port: int):
-    create_dashboard_api(app, message_queues.db_connection)
 
+def start(port: int, db_config: dict, report_to_dashboard=False):
+    config.save_to_config(db_config, report_to_dashboard)
+    Database.create_table_if_not_exists(db_config)
+
+    message_queues = MessageQueueCollection(socket=sio)
     message_queues.create_and_populate_queues()
+    
     print("Initiated queues: ", message_queues.queues)
-
+    
     web.run_app(app, port=port)
 
 
 if __name__ == '__main__':
-    start(port=10000)
+    db_config = config.db_config()
+    start(port=10000, db_config=db_config, report_to_dashboard=True)

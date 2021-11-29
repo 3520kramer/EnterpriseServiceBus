@@ -30,7 +30,7 @@ class MessageQueueCollection:
     @property
     def db_connection(self):
         return self.__db_connection
-
+        
     def create_and_populate_queues(self):
         messages = self.db_connection.get_all()
 

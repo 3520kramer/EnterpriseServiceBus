@@ -1,8 +1,7 @@
 # custom
-esb-env/
+venv-siasmqserver
 .vscode
-old/
-db_config.ini
+config.ini
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
