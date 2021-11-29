@@ -1,4 +1,5 @@
-# A naive implementation of an ESB / Kafka
+# Simple Async Message Queue Server
+### A simple implementation of an ESB / Kafka 
 Implementation is done as part of a school project
 
 ## Server Example
