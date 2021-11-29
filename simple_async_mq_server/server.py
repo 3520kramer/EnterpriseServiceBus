@@ -1,12 +1,12 @@
 from aiohttp import web
 import socketio
-from models.message import Message
-from models.subscriber import Subscriber
-from models.message_queue_collection import MessageQueueCollection
-from database.db import Database
-from utilities.helpers import current_datetime
-from utilities import config
-from api.dashboard_api import create_dashboard_api
+from .models.message import Message
+from .models.subscriber import Subscriber
+from .models.message_queue_collection import MessageQueueCollection
+from .database.db import Database
+from .utilities.helpers import current_datetime
+from .utilities import config
+from .api.dashboard_api import create_dashboard_api
 
 # https://medium.com/@joel.barmettler/how-to-upload-your-python-package-to-pypi-65edc5fe9c56
 

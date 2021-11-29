@@ -1,10 +1,9 @@
-from database.db import Database
-from models.message import Message
-from utilities import helpers
-from models.message_queue import MessageQueue
-from models.subscriber import Subscriber
+from ..database.db import Database
+from ..models.message import Message
+from ..utilities import helpers
+from ..models.message_queue import MessageQueue
+from ..models.subscriber import Subscriber
 import socketio
-
 
 class MessageQueueCollection:
 

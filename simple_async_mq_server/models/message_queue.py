@@ -1,11 +1,10 @@
 from asyncio import Queue
-from database.db import Database
-from models.message import Message
-from models.subscriber import Subscriber
-from utilities.config import reporting_to_dashboard
 import socketio
-
-from utilities.transformer import transform_to
+from ..database.db import Database
+from ..models.message import Message
+from ..models.subscriber import Subscriber
+from ..utilities.config import reporting_to_dashboard
+from ..utilities.transformer import transform_to
 
 # https://www.geeksforgeeks.org/python-list-comprehensions-vs-generator-expressions/
 

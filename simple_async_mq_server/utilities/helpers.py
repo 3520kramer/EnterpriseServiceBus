@@ -23,15 +23,3 @@ def create_publish_message(data):
         'content': data['content']
     }
 
-
-def get_connect_headers(sid, environ):
-    return {
-        'topic': environ['HTTP_TOPIC'],
-        'output_format': environ['HTTP_OUTPUT_FORMAT'],
-        'sid': sid
-    }
-
-def get_db_config():
-    config = configparser.ConfigParser()
-    config.read('simple_async_mq_server/database/db_config.ini')
-    return config['database']

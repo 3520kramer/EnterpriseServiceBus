@@ -1,4 +1,3 @@
-
 class Subscriber:
   def __init__(self, topic, output_format, sid) -> None:
       self.topic = topic

@@ -1,6 +1,6 @@
 from uuid import uuid4
-from utilities.helpers import current_datetime
-from utilities.transformer import transform_to_dict
+from ..utilities.helpers import current_datetime
+from ..utilities.transformer import transform_to_dict
 import json
 import datetime
 
