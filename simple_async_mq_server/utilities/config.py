@@ -3,13 +3,12 @@ import configparser
 
 def db_config() -> dict[str, str]:
     config = configparser.ConfigParser()
-    # config.read('simple_async_mq_server/config.ini')
     config.read('config.ini')
     return config['database']
 
 def reporting_to_dashboard() -> bool:
     config = configparser.ConfigParser()
-    config.read('simple_async_mq_server/config.ini')
+    config.read('config.ini')
     return config.getboolean('dashboard', 'report_to_dashboard')
 
 def save_to_config(db_config: dict, report_to_dashboard=False):
@@ -23,7 +22,6 @@ def save_to_config(db_config: dict, report_to_dashboard=False):
     config.set('database', 'password', db_config['password'])
     config.set('database', 'database', db_config['database'])
 
-    # with open('simple_async_mq_server/config.ini', 'w+') as configfile:
     with open('config.ini', 'w+') as configfile:
         config.write(configfile)
 
