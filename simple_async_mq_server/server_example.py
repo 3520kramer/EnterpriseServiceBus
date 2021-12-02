@@ -1,4 +1,6 @@
-import server
+ #import server
+
+from simple_async_mq_server import server
 
 db_config = {
     'host': 'localhost',
