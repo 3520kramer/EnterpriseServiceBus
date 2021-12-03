@@ -8,4 +8,4 @@ if __name__ == '__main__':
     'database': 'siasmq'
   }
   
-  server.start(10000, db_config=test)
+  server.start(10000, db_config=test, report_to_dashboard=True)

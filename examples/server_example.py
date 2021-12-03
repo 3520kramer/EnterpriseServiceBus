@@ -1,5 +1,3 @@
- #import server
-
 from simple_async_mq_server import server
 
 db_config = {
@@ -9,4 +7,4 @@ db_config = {
     'database': 'siasmq'
 }
 
-server.start(10000, db_config)
+server.start(10000, db_config, report_to_dashboard=True)

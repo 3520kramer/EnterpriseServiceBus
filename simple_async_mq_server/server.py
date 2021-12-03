@@ -6,7 +6,7 @@ from .models.message_queue_collection import MessageQueueCollection
 from .database.db import Database
 from .utilities.helpers import current_datetime
 from .utilities import config
-from .api.dashboard_api import create_dashboard_api
+from .api.dashboard_api import create_dashboard_api_route
 
 # https://medium.com/@joel.barmettler/how-to-upload-your-python-package-to-pypi-65edc5fe9c56
 
@@ -14,9 +14,7 @@ sio = socketio.AsyncServer(cors_allowed_origins='http://localhost:3000')
 app = web.Application()
 
 sio.attach(app)
-
-message_queues: MessageQueueCollection = None
-
+message_queues = MessageQueueCollection(socket=sio)
 
 @sio.event
 async def connect(sid, environ):
@@ -76,8 +74,9 @@ test = {
 def start(port: int, db_config: dict, report_to_dashboard=False):
     config.save_to_config(db_config, report_to_dashboard)
     Database.create_table_if_not_exists(db_config)
+    
+    if(report_to_dashboard): create_dashboard_api_route(app)
 
-    message_queues = MessageQueueCollection(socket=sio)
     message_queues.create_and_populate_queues()
     
     print("Initiated queues: ", message_queues.queues)

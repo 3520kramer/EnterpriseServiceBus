@@ -1,17 +1,23 @@
 import aiohttp_cors
 from aiohttp import web
 import asyncio
+from ..database.db import Database
 
-def create_dashboard_api(app, db_connection):
+def create_dashboard_api_route(app):
+    # CORS setup
     cors = aiohttp_cors.setup(app)
 
+    # Will execute when route is hit
     @asyncio.coroutine
     def handler(request):
-        messages = db_connection.get_all()
+        db = Database()
+        messages = db.get_all()
         return web.json_response(messages)
 
+    # registering the route as a resource
     resource = cors.add(app.router.add_resource("/api"))
 
+    # adding the route to cors
     cors.add(
         resource.add_route("GET", handler), {
             "http://localhost:3000": aiohttp_cors.ResourceOptions(
