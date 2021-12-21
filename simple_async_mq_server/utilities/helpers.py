@@ -9,7 +9,8 @@ def create_log_message(msg):
         'topic': msg['topic'],
         'published_time': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         'content_format': msg['content_format'],
-        'content': msg['content']
+        'content': msg['content'],
+        'org_content': msg['org_content']
     }
 
 def current_datetime():

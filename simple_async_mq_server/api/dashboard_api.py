@@ -2,6 +2,9 @@ import aiohttp_cors
 from aiohttp import web
 import asyncio
 from ..database.db import Database
+import json
+
+
 
 def create_dashboard_api_route(app):
     # CORS setup
@@ -12,7 +15,17 @@ def create_dashboard_api_route(app):
     def handler(request):
         db = Database()
         messages = db.get_all()
-        return web.json_response(messages)
+        
+        # need to transform content to dict to be able to de proper json conversion
+        for message in messages:
+            if message['content_format'] == 'json':
+                message['org_content'] = json.loads(message['org_content'])
+
+        json_response = json.dumps(messages, default=str)
+        print("json_res", json_response)
+        headers = {'Content-Type': 'application/json'}
+
+        return web.Response(body=json_response, headers=headers ) # messages
 
     # registering the route as a resource
     resource = cors.add(app.router.add_resource("/api"))

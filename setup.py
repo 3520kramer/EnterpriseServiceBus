@@ -3,13 +3,13 @@ from setuptools import setup, find_packages
 setup(
   name = 'simple_async_mq_server',         # How you named your package folder (MyLib)
   packages = ['simple_async_mq_server', 'simple_async_mq_server.api', 'simple_async_mq_server.database', 'simple_async_mq_server.models','simple_async_mq_server.utilities'],
-  version = '0.0.19',      # Start with a small number and increase it with every change you make
+  version = '0.0.20',      # Start with a small number and increase it with every change you make
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'A simple async message queue server - socket-io wrapper',   # Give a short description about your library
   author = 'Oliver Kramer',                   # Type in your name
   author_email = '3520.kramer@gmail.com',      # Type in your E-Mail
   url = 'https://github.com/3520kramer/simple-async-mq-server',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/3520kramer/simple-async-mq-server/archive/v_0019.tar.gz',    # I explain this later on
+  download_url = 'https://github.com/3520kramer/simple-async-mq-server/archive/v_0021.tar.gz',    # I explain this later on
   keywords = ['mq', 'async', 'server'],   # Keywords that define your package best
   install_requires=[            # I get to this in a second
           'asyncio',

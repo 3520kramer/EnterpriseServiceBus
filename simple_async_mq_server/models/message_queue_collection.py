@@ -38,6 +38,7 @@ class MessageQueueCollection:
                 uuid=msg['uuid'],
                 topic=msg['topic'],
                 content_format=msg['content_format'],
+                org_content=msg['content'],
                 content=msg['content'],
                 published_time=msg['published_time'])
 

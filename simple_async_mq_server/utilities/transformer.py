@@ -19,6 +19,9 @@ def transform_to_dict(data, content_format):
     elif content_format == 'csv':
         parsed = csv_to_dict(data)
 
+    elif content_format == 'tsv':
+        parsed = csv_to_dict(data, delimiter='\t')
+
     else:
         print("unknown input format")
         return None
@@ -55,9 +58,9 @@ def xml_to_dict(xml_data):
     return xmltodict.parse(xml_data, dict_constructor=dict)
 
 
-def csv_to_dict(csv_data):  # could use pandas instead
+def csv_to_dict(csv_data, delimiter=','):  # could use pandas instead
     csv_data = StringIO(csv_data)
-    csv_reader = csv.DictReader(csv_data)
+    csv_reader = csv.DictReader(csv_data, delimiter=delimiter)
     parsed = [row for row in csv_reader]
 
     return {"items": parsed}

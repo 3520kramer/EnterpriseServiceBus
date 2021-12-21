@@ -28,7 +28,8 @@ class Database():
                         published_time DATETIME NOT NULL,
                         consumed_time DATETIME,
                         content_format VARCHAR(4) NOT NULL,
-                        content VARCHAR(1000) NOT NULL
+                        content VARCHAR(1000) NOT NULL,
+                        org_content VARCHAR(1000) NOT NULL
                     ) default charset utf8mb4;
                 """
             cursor.execute(query)
@@ -44,8 +45,8 @@ class Database():
 
     def insert(self, msg) -> list:
       query = '''
-        INSERT INTO queue_log (uuid, is_consumed, topic, published_time, content_format, content, consumed_time)
-        VALUES(%s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO queue_log (uuid, is_consumed, topic, published_time, content_format, content, org_content, consumed_time)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s)
       '''
 
       query_params = list(msg.values())

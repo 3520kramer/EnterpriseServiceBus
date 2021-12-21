@@ -54,8 +54,10 @@ async def handle_published_msg(sid, data):
     msg = Message(
         topic=data['topic'],
         content_format=data['content_format'],
-        content=data['content'],
+        org_content=data['content'],
         published_time=current_datetime())
+
+    print("MESSAGE", msg)
 
     # Place the message in the queue for the topic
     await message_queues.add_message(msg)

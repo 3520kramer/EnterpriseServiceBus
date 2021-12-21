@@ -6,14 +6,15 @@ import datetime
 
 
 class Message():
-    def __init__(self, topic: str, published_time: str, content_format: str, content: str or dict or list,
+    def __init__(self, topic: str, published_time: str, content_format: str, org_content: str, content: str or dict or list = None,
                  consumed_time: str = None, uuid: str = None) -> None:
         self.__uuid = uuid4().hex if uuid is None else uuid
         self.__is_consumed = False
         self.__topic = topic
         self.__published_time = published_time
         self.__content_format = content_format
-        self.__content = transform_to_dict(content, content_format)
+        self.__org_content = org_content
+        self.__content = content
         self.__consumed_time = consumed_time
 
     def __str__(self):
@@ -26,6 +27,14 @@ class Message():
     @property
     def topic(self):
         return self.__topic
+
+    @property
+    def org_content(self):
+        return self.__org_content
+
+    @property
+    def content_format(self):
+        return self.__content_format
 
     @property
     def is_consumed(self):
@@ -68,5 +77,6 @@ class Message():
             'published_time': str(self.__published_time),
             'content_format': self.__content_format,
             'content': json.dumps(self.__content),
+            'org_content': self.__org_content,
             'consumed_time': self.consumed_time if self.consumed_time == None else str(self.consumed_time)
         }
