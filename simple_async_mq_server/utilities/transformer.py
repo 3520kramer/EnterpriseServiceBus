@@ -8,7 +8,6 @@ from io import StringIO
 
 def transform_to_dict(data, content_format):
     data = str(data)
-    print("TRANSFORM", data, content_format)
 
     if content_format == 'json':
         parsed = json_to_dict(data)
@@ -30,7 +29,6 @@ def transform_to_dict(data, content_format):
 
 
 def transform_to(data, output_format):
-    print("TRANSFORM", data, output_format)
 
     if output_format == 'json':
         data = dict_to_json(data)
@@ -39,9 +37,11 @@ def transform_to(data, output_format):
         data = dict_to_xml(data)
 
     elif output_format == 'csv':
-        #data['content'] = dict_to_csv(parsed)
-        print("skip csv output")
-        data = str(data)
+        data = dict_to_csv(data)
+        print("skip csv output", data)
+        # data = str(data)
+    elif output_format == 'tsv':
+        data = dict_to_csv(data, delimiter='\t')
 
     else:
         print("unknown output format")
@@ -63,7 +63,7 @@ def csv_to_dict(csv_data, delimiter=','):  # could use pandas instead
     csv_reader = csv.DictReader(csv_data, delimiter=delimiter)
     parsed = [row for row in csv_reader]
 
-    return {"items": parsed}
+    return parsed[0]#{"items": parsed}
 
     if len(parsed) == 1:
         return {"items": parsed}
@@ -72,6 +72,19 @@ def csv_to_dict(csv_data, delimiter=','):  # could use pandas instead
     a = pd.read_csv(StringIO(csv_data))
     b = a.to_dict(orient='list')
     return b
+
+def dict_to_csv(dict_data, delimiter=','):    
+    csv_data = StringIO()
+    try:
+        writer = csv.DictWriter(csv_data, fieldnames=dict_data.keys(), delimiter=delimiter)
+        writer.writeheader()
+        writer.writerow(dict_data)
+    except IOError:
+        print("I/O error")
+    except Exception as e:
+        print("WHAT", e)
+    
+    return csv_data.getvalue()
 
 
 def dict_to_json(dict_data):
@@ -91,7 +104,7 @@ def iterate_depth_of_dict(data):
             return data
 
 
-def dict_to_csv(dict_data):
+def dict_to_csv2(dict_data):
     if isinstance(dict_data, dict):
         dict_data = iterate_depth_of_dict(dict_data)
 
@@ -103,7 +116,7 @@ def dict_to_csv(dict_data):
 def dict_to_xml(dict_data):
     wrap = None
     if isinstance(dict_data, dict):
-        return dict2xml(dict_data, indent='  ')
+        return dict2xml(dict_data, indent='  ', wrap="root")
 
     if isinstance(dict_data, list):  # if it's a list of dictionaries
         return NotImplementedError

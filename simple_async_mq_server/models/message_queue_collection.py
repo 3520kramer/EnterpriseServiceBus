@@ -3,6 +3,7 @@ from ..models.message import Message
 from ..utilities import helpers
 from ..models.message_queue import MessageQueue
 from ..models.subscriber import Subscriber
+from ..utilities.transformer import transform_to_dict
 import socketio
 
 class MessageQueueCollection:
@@ -38,11 +39,11 @@ class MessageQueueCollection:
                 uuid=msg['uuid'],
                 topic=msg['topic'],
                 content_format=msg['content_format'],
-                org_content=msg['content'],
+                org_content=msg['org_content'],
                 content=msg['content'],
                 published_time=msg['published_time'])
 
-            print("MESSAGE:", message)
+            message.content = transform_to_dict(message.org_content, message.content_format)
 
             self.create_queue_if_not_exists(message.topic)
             self.queues[message.topic].queue.put_nowait(message)

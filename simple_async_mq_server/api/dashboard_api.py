@@ -22,7 +22,7 @@ def create_dashboard_api_route(app):
                 message['org_content'] = json.loads(message['org_content'])
 
         json_response = json.dumps(messages, default=str)
-        print("json_res", json_response)
+
         headers = {'Content-Type': 'application/json'}
 
         return web.Response(body=json_response, headers=headers ) # messages

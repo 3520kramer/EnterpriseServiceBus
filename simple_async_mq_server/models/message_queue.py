@@ -65,7 +65,7 @@ class MessageQueue:
         print("msg", msg)
 
         msg.content = transform_to_dict(msg.org_content, msg.content_format)
-        
+
         # Creates the log message and inserts it in the database
         log_msg = msg.get_log_message()
         self.db_connection.insert(log_msg)
@@ -95,7 +95,6 @@ class MessageQueue:
                 output_format = self.subscribers[0].output_format
 
                 msg.content = transform_to(msg.content, output_format)
-                
                 await self.socket.emit(event=msg.topic, data=msg.get_publish_message(), to=self.subscribers[0].sid)
 
                 self.queue.task_done()

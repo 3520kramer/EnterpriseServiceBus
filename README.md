@@ -22,14 +22,14 @@ Object and array definitions for each type can be found below.
 
 | from / to   | JSON | XML | CSV | TSV |
 |-------------|------|-----|-----|-----|
-| JSON object |      |  ✅  |  ✅  |  🔜  |
-| JSON array  |      |  🚫  |  ✅  |  🔜  |
-| XML object  |   ✅  |     |  ✅  |  🔜  |
-| XML array   |   ✅  |     |  ✅  |  🔜  |
-| CSV object  |   ✅  |  ✅  |     |  🔜  |
-| CSV array   |   ✅  |  🚫  |     |  🔜  |
-| TSV object  |   🔜  |  🔜  |  🔜  |     |
-| TSV array   |   🔜  |  🔜  |  🔜  |     |
+| JSON object |      | ✅  |  ✅  |  ✅  |
+| JSON array  |      | 🚫  |  🚫  |  ✅  |
+| XML object  |  ✅  |     |  🚫  |  🚫  |
+| XML array   |  ✅  |     |  🚫  |  🚫  |
+| CSV object  |  ✅  | ✅  |      |  ✅  |
+| CSV array   |  ✅  | 🚫  |      |  ✅  |
+| TSV object  |  ✅  | ✅  |  ✅  |      |
+| TSV array   |  🔜  | 🔜  |  🔜  |      |
 
 ## Object and array definitions
 #### JSON object:
@@ -68,4 +68,14 @@ Object and array definitions for each type can be found below.
     <age>35</age>
  </person>
 </persons>
+```
+
+#### CSV object:
+```csv
+a,b,c\n1,2,3
+```
+
+#### TSV object:
+```csv
+a\tb\tc\n1\t2\t3
 ```
